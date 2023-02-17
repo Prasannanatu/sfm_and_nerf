@@ -38,7 +38,7 @@ def get_epipolar_points(F):
     """ get the epipolar points for the matches 
     Input for this will be the fundamental matrix F calculated above"""
 
-    U,D,V_T = np..linalg.svd(F)
+    U,D,V_T = np.linalg.svd(F)
 
     epipole_1 = V_T[:,2]
     epipole_2 = U[:,2]
@@ -62,8 +62,7 @@ def get_epipolar_lines(F, vec_1, vec_2):
     epipolar_line_2 = np.matmul(F, np.transpose(vec_1))
 
     return epipolar_line_1, epipolar_line_2
-
-def 
+ 
 
 
 
