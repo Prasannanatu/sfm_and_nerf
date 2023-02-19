@@ -8,10 +8,11 @@ import matplotlib.pyplot as plt
 def estimate_camera_pose(K, E):
     """
     Input: Essential matrix 
-
+    getting the value of U, V_T from the Essential Matrix.
+    
     Output: 4 possible Camera Poses.
 
-
+    
 
     """
 
@@ -40,3 +41,5 @@ def estimate_camera_pose(K, E):
     P_4 =  K @ R_2 @ Translation_2
 
     return P_1, P_2, P_3, P_4
+
+
