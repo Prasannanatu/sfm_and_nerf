@@ -39,18 +39,3 @@ def linearTriangulation(R_n,T_n,P,K, vec1,vec2):
         X_final = np.hstack(X_final, X)
     return X_final
 
-
-
-
-
-
-    
-
-
-
-
-
-
-
-    return 0
-
