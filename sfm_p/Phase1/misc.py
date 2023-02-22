@@ -10,4 +10,31 @@ def skew_matrix(x):
     return X
 
 
+def get_homogenous_coordinates(coordinates):
+    """
+    Input: The co-ordinates u,v
+
+    Outputs : The homogenize coordinates
+
+    
+    
+    """
+    # //get get_homogenous_coordinates??
+    ones =np.ones(coordinates.shape[1])
+    homo = np.concatenate(coordinates,ones, axis = 1)
+
+    return homo
+
+
+def get_unhomogenous_coordinates(coordinates):
+    """
+    
+    """
+
+    unhomo = np.delete(coordinates, coordiantes.shape[1]-1, axis =1)
+
+    return unhomo
+    
+
+
     
