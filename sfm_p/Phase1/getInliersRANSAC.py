@@ -11,7 +11,7 @@ def parse_matches_file(image_num, matched_image_num):
     returns the list of matched feature points (u, v) and the list of RGB pixel values.
     """
 
-    path = '../P3Data/matching'
+    path = '../Data/matching'
 
     num_features = -1        # initialized to a value it should never be
 
