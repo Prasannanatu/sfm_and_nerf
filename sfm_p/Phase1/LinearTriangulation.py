@@ -16,16 +16,21 @@ def linearTriangulation(R_n,T_n,P,K, vec1,vec2):
 
     
     """
+    # Converting the images unhomogenous coordinates to homogenous Coordinates
     vec1 = get_homogenous_coordinates(vec1)
     vec2 = get_homogenous_coordinates(vec2)
+
+    # getting the rotation and Translation matrix for origin camera Pose.
     ones = np.identity(3)
     R_0 = np.identity(3)
     C_0 = np.zeros(3,3)
     T_0 = np.hstack(ones, C_0)
     P_0 = K @ R_0 @ T_0
     X =[]
+
     for i in range(len(R_n)):
         for j in range(vec1.shape[0]):
+            #
             X_1 = skew_matrix(vec1[j]) @ P_0
             X_2 = skew_matrix(vec2[j]) @ P[i]
 

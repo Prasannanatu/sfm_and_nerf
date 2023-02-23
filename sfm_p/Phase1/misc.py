@@ -31,7 +31,7 @@ def get_unhomogenous_coordinates(coordinates):
     
     """
 
-    unhomo = np.delete(coordinates, coordiantes.shape[1]-1, axis =1)
+    unhomo = np.delete(coordinates, coordinates.shape[1]-1, axis =1)
 
     return unhomo
     
