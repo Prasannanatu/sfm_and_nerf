@@ -15,21 +15,23 @@ def get_fundamental_matrix(vec1, vec2):
     vec_one = np.ones(vec1.shape[0])
 
     #Getting the respective coordinates from the vector.
-    x_1, y_1, x_2, y_2 = vec1[:,0], vec1[:,1], vec2[:,0], vec2[:,1]
+    x_1, y_1, x_2, y_2 = vec1[:, 0], vec1[:, 1], vec2[:, 0], vec2[:, 1]
 
     #getting the A matrix from the provided equation for SVD formulation.
-    A = [x_1 * x_2, x_1 * y_2, x_1, y_1 * x_2, y_1 * y_2, y_1, x_2, y_2, vec_one]
+    A = np.asarray([x_1 * x_2, x_1 * y_2, x_1, y_1 * x_2, y_1 * y_2, y_1, x_2, y_2, vec_one])
+    A = np.transpose(A)                                 # transpose so matrix is [m x 9], m = matched point pairs
 
     #singular Value Decomposition
-    U,D,V_T = np.linalg.svd(A)
+    _, _, V_T = np.linalg.svd(A)
+    f = V_T[:, -1]
 
-    x = V_T[:,-1]
-    F = x.reshape(3,3)
+    F = f.reshape(3,3)
     F = np.transpose(F)
+
     # Enforcing rank 2 on the matrix as there are only eight equations and eight unknown
     #however due to noise in the Image this doesn't turn out to be zero.
     #Making the last column last element zero changes the rank from  3 to 2.
-    F[2,2] = 0
+    F[2, 2] = 0
 
     return F
 
