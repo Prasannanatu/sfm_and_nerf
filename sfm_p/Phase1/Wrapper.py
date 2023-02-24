@@ -29,15 +29,19 @@ def main():
 
     # Get the list of matches points between images 1 and 2
     matched_points_1_2, RGB_vals_1_2 = parse_matches_file(image_num, matched_image_num)
-    print(matched_points_1_2)
+    # print(matched_points_1_2)
     # print(RGB_vals_1_2)
 
     matched_points_1_2 = np.asarray(matched_points_1_2)     # use numpy to efficiently get all rows of a column
-    u_v_1 = matched_points_1_2[:, 0]
-    u_v_2 = matched_points_1_2[:, 1]
 
-    F_1_2 = get_fundamental_matrix(u_v_1, u_v_2)
-    print(F_1_2)
+    # u_v_1 = matched_points_1_2[:, 0]
+    # u_v_2 = matched_points_1_2[:, 1]
+
+    # F_1_2 = get_fundamental_matrix(u_v_1, u_v_2)
+    # print(F_1_2)
+
+    F = get_inliers_RANSAC(matched_points_1_2)
+    print(F)
 
 
 
