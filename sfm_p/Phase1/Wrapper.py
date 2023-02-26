@@ -34,6 +34,8 @@ def main():
 
     matched_points_1_2 = np.asarray(matched_points_1_2)     # use numpy to efficiently get all rows of a column
 
+    # print('num matched points: ', len(matched_points_1_2))
+
     # u_v_1 = matched_points_1_2[:, 0]
     # u_v_2 = matched_points_1_2[:, 1]
 

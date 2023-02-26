@@ -68,11 +68,12 @@ def get_inliers_RANSAC(matched_points):
     """
     Perform the RANSAC algorithm using the fundamental matrix to estimate inlier correspondences between image pairs
     :param matched_points: a list of the matched pixel coordinates of two images
-    :return: the fundamental matrix with the maximum number of matched point inliers and the new list of best matches
+    :return: the fundamental matrix with the maximum number of matched point inliers
     """
 
-    iterations = 2000                                   # iterations of RANSAC to attempt unless found enough paris
-    epsilon = 0.5                                       # threshold for fundamental matrix transforming
+    iterations = 1000                                   # iterations of RANSAC to attempt unless found enough good paris
+    epsilon = 0.75                                      # threshold for fundamental matrix transforming
+    percent_good_matches = 0.999                         # what percentage of num_matches are enough to stop iterating
 
     matched_points = np.asarray(matched_points)         # use numpy for efficiently getting all rows of a column
     num_matches = len(matched_points)                   # number of matching feature coordinates between the images
@@ -124,21 +125,32 @@ def get_inliers_RANSAC(matched_points):
             point = np.array([x_pt, y_pt, 1], np.float32)
             point_prime = np.array([x_pt_prime, y_pt_prime, 1], np.float32)
 
-            point = np.transpose(point)         # for computing x2 * F * x1
+            point = np.transpose(point)         # for computing x_prime * F * x
 
-            result = point_prime @ F @ point    # @ is matrix multiplication, np.matmul
+            # result = point_prime @ F @ point    # @ is matrix multiplication, np.matmul
 
-            if abs(result) < epsilon:
+            pt_prime_F = np.matmul(point_prime, F)
+
+            # Must divide x and y by z to get 2D points again
+            if pt_prime_F[2] == 0:  # prevent divide by zero error
+                pt_prime_F[2] = 0.0000001
+            p_x = pt_prime_F[0] / pt_prime_F[2]
+            p_y = pt_prime_F[1] / pt_prime_F[2]
+            pt_prime_F = np.array([p_x, p_y, 1], np.float32)
+
+            pt_prime_F_pt = np.matmul(pt_prime_F, point)
+
+            if abs(pt_prime_F_pt) < epsilon:
                 num_good_matches += 1
                 pairs_indices.append(i)
-                # print(result)
+                # print(pt_prime_F_pt)
 
         matches_p = []
         matches_p_prime = []
 
         if maximum < num_good_matches:
             maximum = num_good_matches
-            # print(maximum)
+            # print('good matches found: ', num_good_matches)
 
             [matches_p.append(matched_points[ind, 0]) for ind in pairs_indices]
             [matches_p_prime.append(matched_points[ind, 1]) for ind in pairs_indices]
@@ -146,12 +158,12 @@ def get_inliers_RANSAC(matched_points):
             matches_p = np.asarray(matches_p)
             matches_p_prime = np.asarray(matches_p_prime)
 
-            # print(matches_p)
-            # print(matches_p_prime)
-
             # compute the fundamental matrix for the matched pairs
             latest_F = get_fundamental_matrix(matches_p, matches_p_prime)
 
-    best_matches = [matched_points[x] for x in pairs_indices]  # find the pairs corresponding to the computed indicies
+            if num_good_matches > percent_good_matches * num_matches:       # end if desired matches num were found
+                break
 
-    return latest_F  # , best_matches
+    # best_matches = [matched_points[x] for x in pairs_indices]  # find the pairs corresponding to the computed indicies
+
+    return latest_F
