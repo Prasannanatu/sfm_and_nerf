@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 import cv2
+import pry
 
 
 def get_fundamental_matrix(vec1, vec2):
@@ -23,8 +24,9 @@ def get_fundamental_matrix(vec1, vec2):
     #singular Value Decomposition
     U,D,V_T = np.linalg.svd(A)
 
-    x = V_T[:,-1]
+    x = V_T[-1,:]
     F = x.reshape(3,3)
+    pry()
     F = np.transpose(F)
     # Enforcing rank 2 on the matrix as there are only eight equations and eight unknown
     #however due to noise in the Image this doesn't turn out to be zero.

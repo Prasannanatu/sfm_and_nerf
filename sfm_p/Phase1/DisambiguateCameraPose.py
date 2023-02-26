@@ -48,8 +48,10 @@ def disambiguatecamerapose(P,X_final, R_n, T_n,C_n):
     
     X_cheiral = X[:, idx]               # get the final coordinates of the World Points.
 
+    P_chieral = P[idx]
 
-    return R_cheiral, C_cheiral, X_cheiral
+
+    return R_cheiral, C_cheiral, X_cheiral, P_chieral
 
 
 

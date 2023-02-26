@@ -60,9 +60,6 @@ def estimate_camera_pose(K, E):
 
 
 
-
-
-
     # P_1 =  K @ R_1  @ Translation_1
     # P_2 =  K @ R_1  @ Translation_2
     # P_3 =  K @ R_2  @ Translation_1
