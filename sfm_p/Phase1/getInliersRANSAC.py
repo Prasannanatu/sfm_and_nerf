@@ -67,13 +67,13 @@ def parse_matches_file(image_num, matched_image_num):
 def get_inliers_RANSAC(matched_points):
     """
     Perform the RANSAC algorithm using the fundamental matrix to estimate inlier correspondences between image pairs
-    :param matched_points: a list of the matched pixel coordinates of two images
+    :param matched_points: a list of the matched pixel coordinates of two images, of the form [n x 2 x 2]
     :return: the fundamental matrix with the maximum number of matched point inliers
     """
 
     iterations = 1000                                   # iterations of RANSAC to attempt unless found enough good paris
     epsilon = 0.75                                      # threshold for fundamental matrix transforming
-    percent_good_matches = 0.999                         # what percentage of num_matches are enough to stop iterating
+    percent_good_matches = 0.999                        # what percentage of num_matches are enough to stop iterating
 
     matched_points = np.asarray(matched_points)         # use numpy for efficiently getting all rows of a column
     num_matches = len(matched_points)                   # number of matching feature coordinates between the images
@@ -126,8 +126,6 @@ def get_inliers_RANSAC(matched_points):
             point_prime = np.array([x_pt_prime, y_pt_prime, 1], np.float32)
 
             point = np.transpose(point)         # for computing x_prime * F * x
-
-            # result = point_prime @ F @ point    # @ is matrix multiplication, np.matmul
 
             pt_prime_F = np.matmul(point_prime, F)
 
