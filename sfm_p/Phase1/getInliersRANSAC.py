@@ -71,7 +71,7 @@ def get_inliers_RANSAC(matched_points):
     :return: the fundamental matrix with the maximum number of matched point inliers
     """
 
-    iterations = 1000                                   # iterations of RANSAC to attempt unless found enough good paris
+    iterations = 1500                                   # iterations of RANSAC to attempt unless found enough good paris
     epsilon = 0.75                                      # threshold for fundamental matrix transforming
     percent_good_matches = 0.999                        # what percentage of num_matches are enough to stop iterating
 

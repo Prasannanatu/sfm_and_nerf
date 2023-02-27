@@ -24,8 +24,8 @@ def main():
 
     """
 
-    image_num = 3
-    matched_image_num = 5
+    image_num = 1
+    matched_image_num = 2
 
     # Get the list of matches points between images 1 and 2
     matched_points_1_2, RGB_vals_1_2 = parse_matches_file(image_num, matched_image_num)
