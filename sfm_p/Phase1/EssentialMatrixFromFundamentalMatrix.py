@@ -20,11 +20,11 @@ def get_Essential_Matrix(F, K):
 
     U,D,V_T = np.linalg.svd(E)
 
-    D = np.array[[1, 0, 0],
+    D_new = np.array([[1, 0, 0],
                  [0, 1, 0],
-                 [0, 0 ,0]]
+                 [0, 0 ,0]])
     
-    E = U @ D @ V_T
+    E = U @ D_new @ V_T
 
     return E
 

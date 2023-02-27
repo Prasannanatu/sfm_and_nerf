@@ -17,6 +17,10 @@ import numpy as np
 
 from getInliersRANSAC import *
 from EstimateFundamentalMatrix import *
+from EssentialMatrixFromFundamentalMatrix import * 
+from misc import *
+from EstimateCameraPose import *
+from LinearTriangulation import * 
 
 
 def main():
@@ -43,7 +47,29 @@ def main():
     # print(F_1_2)
 
     F = get_inliers_RANSAC(matched_points_1_2)
-    print(F)
+    # print(F)
+
+    K = get_K()
+    
+    K.reshape(3,3)
+    # print(K)
+    E = get_Essential_Matrix(F,K)
+    R,T,P,C = estimate_camera_pose(K,E)
+    # print ("R",R)
+    # print ("T",T)
+    # print ("P",P)
+    # print ("C",C)
+
+
+    X = linearTriangulation(R,T,P,K,matched_points_1_2[0],matched_points_1_2[1])
+    print(X)
+
+
+
+
+
+
+    
 
 
 

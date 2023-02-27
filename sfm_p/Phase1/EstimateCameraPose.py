@@ -23,12 +23,12 @@ def estimate_camera_pose(K, E):
     T =[]
     U,D,V_T = np.linalg.svd(E)
 
-    W = np.array[[0, -1, 0],
+    W = np.array([[0, -1, 0],
                  [1, 0, 0],
-                 [0, 0, 1]]
+                 [0, 0, 1]])
     C= []
-    C1 = U[:, 3]
-    C2 = -U[:,3]
+    C1 = U[:, 2]
+    C2 = -U[:,2]
     C.append(C1)
     C.append(C2)
     
@@ -51,11 +51,14 @@ def estimate_camera_pose(K, E):
                 
                 R[i] = -R[i]
                 C[j] = -C[j]
-
-            T = np.hstack(ones ,-C[j])
-            P.append(K@R@T)
-            R_n.append(R)
-            T_n.append(T)
+            c = np.asarray(C[j])
+            c = c.reshape((3,1))
+            T = -R[i] @ c
+            T_t = np.hstack((R[i] ,T))
+            P.append(K @ T_t)
+            # P.append(K@R@T)
+            R_n.append(R[i])
+            T_n.append(T_t)
             C_n.append(C)
 
 
