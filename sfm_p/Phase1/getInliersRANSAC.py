@@ -68,12 +68,12 @@ def get_inliers_RANSAC(matched_points):
     """
     Perform the RANSAC algorithm using the fundamental matrix to estimate inlier correspondences between image pairs
     :param matched_points: a list of the matched pixel coordinates of two images, of the form [n x 2 x 2]
-    :return: the fundamental matrix with the maximum number of matched point inliers
+    :return: the fundamental matrix with the maximum number of matched point inliers and the new list of best matches
     """
 
-    iterations = 1500                                   # iterations of RANSAC to attempt unless found enough good paris
-    epsilon = 0.75                                      # threshold for fundamental matrix transforming
-    percent_good_matches = 0.999                        # what percentage of num_matches are enough to stop iterating
+    iterations = 2000                                   # iterations of RANSAC to attempt unless found enough good paris
+    epsilon = 0.005                                     # threshold for fundamental matrix transforming
+    percent_good_matches = 0.8                          # what percentage of num_matches are enough to stop iterating
 
     matched_points = np.asarray(matched_points)         # use numpy for efficiently getting all rows of a column
     num_matches = len(matched_points)                   # number of matching feature coordinates between the images
@@ -82,9 +82,11 @@ def get_inliers_RANSAC(matched_points):
 
     maximum = 0                                         # how many good matches were found in the last iteration
 
+    best_matches = []                                   # array list of best matches
+
     for index in range(iterations):                     # index iterator variable non-use intentional
 
-        pairs_indices = []                              # array list of best matches
+        # pairs_indices = []
 
         # Select 8 matched feature pairs from each image at random
         points = [np.random.randint(0, num_matches) for num in range(8)]        # 8 random points within num_matches
@@ -113,6 +115,8 @@ def get_inliers_RANSAC(matched_points):
 
         num_good_matches = 0
 
+        good_matches = []
+
         # Compute inliers or best matches using |x2 * F * x1| < threshold, repeat until sufficient matches found
         for i in range(num_matches):
 
@@ -139,29 +143,95 @@ def get_inliers_RANSAC(matched_points):
             pt_prime_F_pt = np.matmul(pt_prime_F, point)
 
             if abs(pt_prime_F_pt) < epsilon:
-                num_good_matches += 1
-                pairs_indices.append(i)
                 # print(pt_prime_F_pt)
-
-        matches_p = []
-        matches_p_prime = []
+                # paris_indices.append(i)
+                num_good_matches += 1
+                good_match = [[x_pt, y_pt], [x_pt_prime, y_pt_prime]]
+                good_matches.append(good_match)
 
         if maximum < num_good_matches:
+
             maximum = num_good_matches
-            # print('good matches found: ', num_good_matches)
+            print('good matches found: ', num_good_matches)
 
-            [matches_p.append(matched_points[ind, 0]) for ind in pairs_indices]
-            [matches_p_prime.append(matched_points[ind, 1]) for ind in pairs_indices]
+            # [matches_p.append(matched_points[ind, 0]) for ind in pairs_indices]
+            # [matches_p_prime.append(matched_points[ind, 1]) for ind in pairs_indices]
 
-            matches_p = np.asarray(matches_p)
-            matches_p_prime = np.asarray(matches_p_prime)
+            # matches_p = np.asarray(matches_p)
+            # matches_p_prime = np.asarray(matches_p_prime)
 
-            # compute the fundamental matrix for the matched pairs
+            good_matches = np.asarray(good_matches)
+            matches_p = good_matches[:, 0]
+            matches_p_prime = good_matches[:, 1]
+
+            # Compute the fundamental matrix for the matched pairs
             latest_F = get_fundamental_matrix(matches_p, matches_p_prime)
+
+            # Set for the output array of best matched points
+            best_matches = good_matches
 
             if num_good_matches > percent_good_matches * num_matches:       # end if desired matches num were found
                 break
 
     # best_matches = [matched_points[x] for x in pairs_indices]  # find the pairs corresponding to the computed indicies
 
-    return latest_F
+    return latest_F, best_matches
+
+
+def visualize_matches(num_image_1, num_image_2, matched_points):
+    """
+    Mark out and draw each matched corner pair on the two images
+    :param num_image_1: first image number
+    :param num_image_2: second image number
+    :param matched_points: The array of matched corner points of shape [n x 2 x 2]
+    """
+
+    im_path = '../Data/'
+
+    image1 = cv2.imread(im_path + str(num_image_1) + '.png')  # load from image file
+    image2 = cv2.imread(im_path + str(num_image_2) + '.png')
+
+    # Handling the case of a color or greyscale image passed to the visualizer
+    if len(image1.shape) == 3:
+        height1, width1, depth1 = image1.shape
+        height2, width2, depth2 = image2.shape
+        shape = (max(height1, height2), width1 + width2, depth1)
+
+    elif len(image1.shape) == 2:
+        height1, width1, depth1 = image1.shape
+        height2, width2, depth2 = image2.shape
+        shape = (max(height1, height2), width1 + width2)
+
+    image_combined = np.zeros(shape, type(image1.flat[0]))  # blank side-by-side images
+    image_combined[0:height1, 0:width1] = image1  # fill in left side image
+    image_combined[0:height1, width1:width1 + width2] = image2  # fill in right side image
+    image_1_2 = image_combined.copy()
+
+    circle_size = 4
+    red = [0, 0, 255]
+    cyan = [255, 255, 0]
+    yellow = [0, 255, 255]
+
+    # Mark each matched corner pair with a circle and draw a line between them
+    for i in range(len(matched_points)):
+        corner1_x = matched_points[i][0][0]
+        corner1_y = matched_points[i][0][1]
+        corner2_x = matched_points[i][1][0]
+        corner2_y = matched_points[i][1][1]
+
+        cv2.line(image_1_2, (int(corner1_x), int(corner1_y)), (int(corner2_x + image1.shape[1]), int(corner2_y)), red,
+                 1)
+        cv2.circle(image_1_2, (int(corner1_x), int(corner1_y)), circle_size, cyan, 1)
+        cv2.circle(image_1_2, (int(corner2_x) + image1.shape[1], int(corner2_y)), circle_size, yellow, 1)
+
+    # Resize for better displaying
+    scale = 1.5
+    height = image_1_2.shape[0] / scale
+    width = image_1_2.shape[1] / scale
+    im = cv2.resize(image_1_2, (int(width), int(height)))
+
+    # Save as "".png
+    # cv2.imwrite('' + '.png', image)
+    cv2.imshow("Matches visualizing", im)
+    cv2.waitKey(0)
+

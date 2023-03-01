@@ -1,6 +1,6 @@
 import numpy as np
 from misc import *
-import pry
+#import pry
 
 
 
@@ -31,12 +31,12 @@ def linearTriangulation(R_n,T_n,P,K, vec1,vec2):
 
     for i in range(len(R_n)):
         for j in range(len(vec1_)):
-            pry()
+            #pry()
             X_1 = skew_matrix(vec1[j]) @ P_0
             
             X_2 = skew_matrix(vec2[j]) @ P[i]
         
-            pry()
+            #pry()
             X_ = np.vstack((X_1, X_2))
 
             U, D, V_T = np.linalg.svd(X_)

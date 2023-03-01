@@ -23,8 +23,8 @@ def get_fundamental_matrix(vec1, vec2):
 
     #singular Value Decomposition
     _, _, V_T = np.linalg.svd(A)
-    f = V_T[:, -1]
-
+    # f = V_T[:, -1]
+    f = V_T[-1][:]
     F = f.reshape(3,3)
     F = np.transpose(F)
 
