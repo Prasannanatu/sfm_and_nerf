@@ -19,7 +19,7 @@ from getInliersRANSAC import *
 from EstimateFundamentalMatrix import *
 from EssentialMatrixFromFundamentalMatrix import * 
 from misc import *
-from EstimateCameraPose import *
+from ExtractCameraPose import *
 from LinearTriangulation import * 
 
 
@@ -28,8 +28,8 @@ def main():
 
     """
 
-    image_num = 3
-    matched_image_num = 4
+    image_num = 1
+    matched_image_num = 2
 
     # Get the list of matches points between images 1 and 2
     matched_points_1_2, RGB_vals_1_2 = parse_matches_file(image_num, matched_image_num)
@@ -41,31 +41,42 @@ def main():
 
     # u_v_1 = matched_points_1_2[:, 0]
     # u_v_2 = matched_points_1_2[:, 1]
-
+    #
     # F_1_2 = get_fundamental_matrix(u_v_1, u_v_2)
     # print(F_1_2)
 
     # visualize_matches(image_num, matched_image_num, matched_points_1_2)
 
     F, best_matched_points_1_2 = get_inliers_RANSAC(matched_points_1_2)
-    print(F)
-
+    print("F: ", F)
     print('num best matched points: ', len(best_matched_points_1_2))
     visualize_matches(image_num, matched_image_num, best_matched_points_1_2)
 
-
     # K = get_K()
+    # # print("K: ", K)
     #
-    # K.reshape(3,3)
-    # # print(K)
-    # E = get_Essential_Matrix(F,K)
-    # R,T,P,C = estimate_camera_pose(K,E)
-    # # print ("R",R)
-    # # print ("T",T)
-    # # print ("P",P)
-    # # print ("C",C)
+    # E = get_Essential_Matrix(F, K)
+    # print('E: ', E)
     #
+    # C_list, R_list = extract_camera_pose(E)
+    # print('C: ', C_list)
+    # print('R: ', R_list)
     #
+    # X_points_1 = linear_triangulation(K, C_list[0], R_list[0], best_matched_points_1_2)
+    # X_points_2 = linear_triangulation(K, C_list[1], R_list[1], best_matched_points_1_2)
+    #
+    # visualize_points_3D(X_points_1, X_points_2)
+
+
+
+
+    # R, T, P, C = extract_camera_pose(K, E)
+    # print('R: ', R)
+    # print('T: ', T)
+    # print('P: ', P)
+    # print('C: ', C)
+
+
     # X = linearTriangulation(R,T,P,K,matched_points_1_2[0],matched_points_1_2[1])
     # print(X)
 

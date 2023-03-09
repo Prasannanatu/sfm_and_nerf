@@ -1,7 +1,85 @@
+import matplotlib.pyplot as plt
 import numpy as np
 from misc import *
 #import pry
 
+
+def linear_triangulation(K, C, R, best_matched_points):
+    """
+    Perform triangulation using linear least squares on the
+    :param K: camera intrinsic matrix of calibrated parameters
+    :param C: camera origin position vector also known as T
+    :param R: camera orientation expressed as a rotation matrix
+    :param best_matched_points: filtered best matched image plane points between the two views
+    :return: the 3D points w.r.t. the camera origin and without a scale factor thus dimensionless
+    """
+
+    u_v_1 = best_matched_points[:, 0]
+    u_v_2 = best_matched_points[:, 1]
+
+    points_1 = [get_homogenous_coordinates(point_1) for point_1 in u_v_1]
+    points_2 = [get_homogenous_coordinates(point_2) for point_2 in u_v_2]
+    # print(points_1)
+
+    # Calculate the camera pose from the position vector and rotation matrix
+    C = C.reshape((3, 1))                           # make into column vector
+    Identity = np.identity(3)                       # identity matrix
+    I_C = np.append(Identity, -C, axis=1)           # [3 x 4] matrix
+
+    P = K @ R @ I_C
+    print('P: ', P)
+
+    # Calculate the pose for the camera at the origin, the assumed location of the camera that captured u_v_1
+    R_O = Identity
+    C_O = np.zeros((3, 1))
+    I_C_O = np.append(Identity, C_O, axis=1)
+    P_O = K @ R_O @ I_C_O
+
+    X_pts = []
+    num_points = best_matched_points.shape[0]
+
+    for i in range(num_points):
+
+        X_1_i = skew_matrix(points_1[i]) @ P_O
+        X_2_i = skew_matrix(points_2[i]) @ P
+
+        x_P = np.vstack((X_1_i, X_2_i))
+        _, _, V_T = np.linalg.svd(x_P)
+        X_pt = V_T[-1][:]
+
+        X_pt = X_pt / X_pt[3]
+        # print('X_pt: ', X_pt)
+
+        X_pts.append(X_pt)
+
+    return X_pts
+
+
+def visualize_points_3D(points_list_1, points_list_2):
+
+    points_list_1 = np.asarray(points_list_1)               # use numpy to efficiently get all rows of a column
+    points_list_2 = np.asarray(points_list_2)
+
+    x_pts_1 = points_list_1[:, 0]
+    y_pts_1 = points_list_1[:, 1]
+    z_pts_1 = points_list_1[:, 2]
+
+    x_pts_2 = points_list_2[:, 0]
+    y_pts_2 = points_list_2[:, 1]
+    z_pts_2 = points_list_2[:, 2]
+
+    fig = plt.Figure()
+    ax = plt.axes(projection="3d")
+
+    # Creating plot
+    # plt.scatter(x_pts_1, y_pts_1, color="red")
+    # plt.scatter(x_pts_2, y_pts_2, color="blue")
+    ax.scatter3D(x_pts_1, y_pts_1, z_pts_1, color="red")
+    ax.scatter3D(x_pts_2, y_pts_2, z_pts_2, color="blue")
+    plt.title("triangulated 3D points")
+
+    # show plot
+    plt.show()
 
 
 def linearTriangulation(R_n,T_n,P,K, vec1,vec2):
@@ -33,9 +111,9 @@ def linearTriangulation(R_n,T_n,P,K, vec1,vec2):
         for j in range(len(vec1_)):
             #pry()
             X_1 = skew_matrix(vec1[j]) @ P_0
-            
+
             X_2 = skew_matrix(vec2[j]) @ P[i]
-        
+
             #pry()
             X_ = np.vstack((X_1, X_2))
 

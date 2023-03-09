@@ -19,13 +19,15 @@ def get_homogenous_coordinates(coordinates):
     
     
     """
-    # //get get_homogenous_coordinates??
-    # print(coordinates.shape)
-    coordinates = coordinates.reshape((2,1))
-    ones =np.ones((1, coordinates.shape[1]))
-    homo = np.vstack([coordinates,ones])
-    # a_with_zeros = np.vstack([a, np.zeros((1, 3))])
-    # print(homo)
+    # # //get get_homogenous_coordinates??
+    # # print(coordinates.shape)
+    # coordinates = coordinates.reshape((2,1))
+    # ones =np.ones((1, coordinates.shape[1]))
+    # homo = np.vstack([coordinates,ones])
+    # # a_with_zeros = np.vstack([a, np.zeros((1, 3))])
+    # # print(homo)
+
+    homo = np.append(coordinates, 1.0)
 
     return homo
 

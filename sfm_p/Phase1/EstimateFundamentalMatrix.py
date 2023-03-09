@@ -11,27 +11,31 @@ def get_fundamental_matrix(vec1, vec2):
     Output : Fundamental matrix of shape 3*3 which gives us the relation between two relative points.
     i.e. x_2.T * F * x_1.T  = 0 
     """
-    #Getting the last row for set of point correspondances as zero.
+    # Getting the last row for set of point correspondances as zero.
     vec_one = np.ones(vec1.shape[0])
 
-    #Getting the respective coordinates from the vector.
+    # Getting the respective coordinates from the vector.
     x_1, y_1, x_2, y_2 = vec1[:, 0], vec1[:, 1], vec2[:, 0], vec2[:, 1]
 
-    #getting the A matrix from the provided equation for SVD formulation.
-    A = np.asarray([x_1 * x_2, x_1 * y_2, x_1, y_1 * x_2, y_1 * y_2, y_1, x_2, y_2, vec_one])
+    # Getting the A matrix from the provided equation for SVD formulation.
+    # A = np.asarray([x_1 * x_2, x_1 * y_2, x_1, y_1 * x_2, y_1 * y_2, y_1, x_2, y_2, vec_one])
+    A = np.asarray([x_1 * x_2, y_1 * x_2, x_2, x_1 * y_2, y_1 * y_2, y_2, x_1, y_1, vec_one])  # N x 9
     A = np.transpose(A)                                 # transpose so matrix is [m x 9], m = matched point pairs
 
-    #singular Value Decomposition
-    _, _, V_T = np.linalg.svd(A)
-    # f = V_T[:, -1]
-    f = V_T[-1][:]
-    F = f.reshape(3,3)
-    F = np.transpose(F)
+    # Perform SVD
+    U, D, V_T = np.linalg.svd(A)                        # output matrix V_T is shape [9 x 9]
+    f = V_T[-1, :]                                      # -1 refers to the last element, the maximum index number
 
-    # Enforcing rank 2 on the matrix as there are only eight equations and eight unknown
-    #however due to noise in the Image this doesn't turn out to be zero.
-    #Making the last column last element zero changes the rank from  3 to 2.
-    F[2, 2] = 0
+    f = f.reshape(3, 3)                                 # reshape to [3 x 3] matrix
+
+    # Re-estimate F by performing SVD on the F calculated from the matched points
+    U_F, D_F, V_T_F = np.linalg.svd(f)
+
+    # Enforcing the internal constraint which the computed F matrix must satisfy, must be of rank 2
+    # The last element of computed D_F (singular values) should be 0 but due to noise may instead be close to 0
+    D_F[2] = 0.0                                        # make D_F rank 2
+    diag_D_F = np.diag(D_F)                             # vector of diagonal values in D_F
+    F = U_F @ diag_D_F @ V_T_F                          # recompose the F matrix
 
     return F
 
