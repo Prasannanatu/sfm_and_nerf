@@ -17,8 +17,11 @@ def linear_triangulation(K, C, R, best_matched_points):
     u_v_1 = best_matched_points[:, 0]
     u_v_2 = best_matched_points[:, 1]
 
-    points_1 = [get_homogenous_coordinates(point_1) for point_1 in u_v_1]
-    points_2 = [get_homogenous_coordinates(point_2) for point_2 in u_v_2]
+    ones = np.ones((u_v_1.shape[0], 1))
+
+    # Convert the image coordinates to homogenous coordinates
+    points_1 = np.concatenate((u_v_1, ones), axis=1)
+    points_2 = np.concatenate((u_v_2, ones), axis=1)
     # print(points_1)
 
     # Calculate the camera pose from the position vector and rotation matrix
@@ -27,7 +30,7 @@ def linear_triangulation(K, C, R, best_matched_points):
     I_C = np.append(Identity, -C, axis=1)           # [3 x 4] matrix
 
     P = K @ R @ I_C
-    print('P: ', P)
+    # print('P: ', P)
 
     # Calculate the pose for the camera at the origin, the assumed location of the camera that captured u_v_1
     R_O = Identity
@@ -55,31 +58,68 @@ def linear_triangulation(K, C, R, best_matched_points):
     return X_pts
 
 
-def visualize_points_3D(points_list_1, points_list_2):
+def visualize_points_2D(points_list_1, points_list_2, points_list_3, points_list_4):
 
     points_list_1 = np.asarray(points_list_1)               # use numpy to efficiently get all rows of a column
     points_list_2 = np.asarray(points_list_2)
+    points_list_3 = np.asarray(points_list_3)
+    points_list_4 = np.asarray(points_list_4)
 
-    x_pts_1 = points_list_1[:, 0]
-    y_pts_1 = points_list_1[:, 1]
-    z_pts_1 = points_list_1[:, 2]
-
-    x_pts_2 = points_list_2[:, 0]
-    y_pts_2 = points_list_2[:, 1]
-    z_pts_2 = points_list_2[:, 2]
-
-    fig = plt.Figure()
-    ax = plt.axes(projection="3d")
+    x_pts_1, y_pts_1, z_pts_1 = points_list_1[:, 0], points_list_1[:, 1], points_list_1[:, 2]
+    x_pts_2, y_pts_2, z_pts_2 = points_list_2[:, 0], points_list_2[:, 1], points_list_2[:, 2]
+    x_pts_3, y_pts_3, z_pts_3 = points_list_3[:, 0], points_list_3[:, 1], points_list_3[:, 2]
+    x_pts_4, y_pts_4, z_pts_4 = points_list_4[:, 0], points_list_4[:, 1], points_list_4[:, 2]
 
     # Creating plot
-    # plt.scatter(x_pts_1, y_pts_1, color="red")
-    # plt.scatter(x_pts_2, y_pts_2, color="blue")
-    ax.scatter3D(x_pts_1, y_pts_1, z_pts_1, color="red")
-    ax.scatter3D(x_pts_2, y_pts_2, z_pts_2, color="blue")
-    plt.title("triangulated 3D points")
+    # fig = plt.Figure()
+    dot_size = 1
+    axes_lim = 30
+
+    plt.scatter(x_pts_1, z_pts_1, color="red", s=dot_size)
+    plt.scatter(x_pts_2, z_pts_2, color="blue", s=dot_size)
+    plt.scatter(x_pts_3, z_pts_3, color="green", s=dot_size)
+    plt.scatter(x_pts_4, z_pts_4, color="purple", s=dot_size)
+
+    plt.title("triangulated world points")
+    plt.xlim(-axes_lim, axes_lim)
+    plt.ylim(-axes_lim, axes_lim)
+    plt.xlabel("x (dimensionless)")
+    plt.ylabel("z (dimensionless)")
 
     # show plot
     plt.show()
+
+
+def visualize_points_3D(points_list_1, points_list_2, points_list_3, points_list_4):
+
+    points_list_1 = np.asarray(points_list_1)  # use numpy to efficiently get all rows of a column
+    points_list_2 = np.asarray(points_list_2)
+    points_list_3 = np.asarray(points_list_3)
+    points_list_4 = np.asarray(points_list_4)
+
+    x_pts_1, y_pts_1, z_pts_1 = points_list_1[:, 0], points_list_1[:, 1], points_list_1[:, 2]
+    x_pts_2, y_pts_2, z_pts_2 = points_list_2[:, 0], points_list_2[:, 1], points_list_2[:, 2]
+    x_pts_3, y_pts_3, z_pts_3 = points_list_3[:, 0], points_list_3[:, 1], points_list_3[:, 2]
+    x_pts_4, y_pts_4, z_pts_4 = points_list_4[:, 0], points_list_4[:, 1], points_list_4[:, 2]
+
+    # Creating plot
+    # fig = plt.Figure()
+    ax = plt.axes(projection="3d")
+    dot_size = 1
+    axes_lim = 30
+
+    ax.scatter3D(x_pts_1, z_pts_1, y_pts_1, color="red", s=dot_size)
+    ax.scatter3D(x_pts_2, z_pts_2, y_pts_2, color="blue", s=dot_size)
+    ax.scatter3D(x_pts_3, z_pts_3, y_pts_3, color="green", s=dot_size)
+    ax.scatter3D(x_pts_4, z_pts_4, y_pts_4, color="purple", s=dot_size)
+
+    plt.title("triangulated world points")
+    plt.xlim(-axes_lim, axes_lim)
+    plt.ylim(-axes_lim, axes_lim)
+
+    # show plot
+    plt.show()
+
 
 
 def linearTriangulation(R_n,T_n,P,K, vec1,vec2):

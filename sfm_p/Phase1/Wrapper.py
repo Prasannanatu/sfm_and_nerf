@@ -50,22 +50,24 @@ def main():
     F, best_matched_points_1_2 = get_inliers_RANSAC(matched_points_1_2)
     print("F: ", F)
     print('num best matched points: ', len(best_matched_points_1_2))
-    visualize_matches(image_num, matched_image_num, best_matched_points_1_2)
+    # visualize_matches(image_num, matched_image_num, best_matched_points_1_2)
 
-    # K = get_K()
-    # # print("K: ", K)
-    #
-    # E = get_Essential_Matrix(F, K)
-    # print('E: ', E)
-    #
-    # C_list, R_list = extract_camera_pose(E)
+    K = get_K()
+    # print("K: ", K)
+
+    E = get_Essential_Matrix(F, K)
+    print('E: ', E)
+
+    C_list, R_list = extract_camera_pose(E)
     # print('C: ', C_list)
     # print('R: ', R_list)
-    #
-    # X_points_1 = linear_triangulation(K, C_list[0], R_list[0], best_matched_points_1_2)
-    # X_points_2 = linear_triangulation(K, C_list[1], R_list[1], best_matched_points_1_2)
-    #
-    # visualize_points_3D(X_points_1, X_points_2)
+
+    X_points_1 = linear_triangulation(K, C_list[0], R_list[0], best_matched_points_1_2)
+    X_points_2 = linear_triangulation(K, C_list[1], R_list[1], best_matched_points_1_2)
+    X_points_3 = linear_triangulation(K, C_list[2], R_list[2], best_matched_points_1_2)
+    X_points_4 = linear_triangulation(K, C_list[3], R_list[3], best_matched_points_1_2)
+
+    visualize_points_2D(X_points_1, X_points_2, X_points_3, X_points_4)
 
 
 

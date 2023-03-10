@@ -23,7 +23,7 @@ def get_fundamental_matrix(vec1, vec2):
     A = np.transpose(A)                                 # transpose so matrix is [m x 9], m = matched point pairs
 
     # Perform SVD
-    U, D, V_T = np.linalg.svd(A)                        # output matrix V_T is shape [9 x 9]
+    _, _, V_T = np.linalg.svd(A)                        # output matrix V_T is shape [9 x 9]
     f = V_T[-1, :]                                      # -1 refers to the last element, the maximum index number
 
     f = f.reshape(3, 3)                                 # reshape to [3 x 3] matrix
@@ -33,9 +33,9 @@ def get_fundamental_matrix(vec1, vec2):
 
     # Enforcing the internal constraint which the computed F matrix must satisfy, must be of rank 2
     # The last element of computed D_F (singular values) should be 0 but due to noise may instead be close to 0
-    D_F[2] = 0.0                                        # make D_F rank 2
-    diag_D_F = np.diag(D_F)                             # vector of diagonal values in D_F
-    F = U_F @ diag_D_F @ V_T_F                          # recompose the F matrix
+    D_F[2] = 0.0                                        # make D_F rank 2 by making the third singular value 0
+    diag_D_F = np.diag(D_F)                             # diagonal matrix of the singular values D_F
+    F = U_F @ diag_D_F @ V_T_F                          # recompose the F matrix from the corrected SVD products
 
     return F
 
