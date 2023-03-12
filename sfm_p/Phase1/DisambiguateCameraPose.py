@@ -4,54 +4,53 @@ import random
 import math
 
 
-def disambiguatecamerapose(P,X_final, R_n, T_n,C_n):
+def disambiguate_camera_poses(C_list, R_list, X_points_poses):
     """
-    Input : Input would be the the camera pose and solution
-    
-    Output: The disambiguated camera pose Rotation and final world coordinates
-
-            for the X to be valid  r3 * (X-C) must be valid
-    
+    Disambiguate between the camera poses in the lists to find which pose has the most points in front of the camera
+    :param C_list: list of possible camera center translation vectors C
+    :param R_list: list of possible camera rotation matrices R
+    :param X_points_poses: list of triangulated points for a camera pose C and R pair
+    :return: The correct C from C_list, R from R_list, and X_points from X_points_poses
     """
-    total_count = []                    # create the empty list for getting the count of true values for all the possible poses
 
-    for i in range(len(R_n)):           #Looping on 4 possible X, C, R values
+    num_poses = len(R_list)
 
-        R= R_n[i]                       #Getting the current R value
+    total_count = []                # create an empty list for getting the count of true values for all possible poses
 
-        r3 = R[:,2]                     #Getting the current r3 value
-        
-        X = X_final[:,i]                #Getting the current X value
-        
-        C = C_n[i]                      #Getting the current C value
-        
-        count = 0                       # initializing a counter
-        
-        for i in range(X.shape[0]):     # Looping over the entire value for checking  condition 
-        
-            if (r3 * (X-C)):            # Checking the condition  cheirality
-        
-                count  = count + 1      # If yes consider it 
+    for i in range(num_poses):                              # looping on 4 possible X, C, R values
 
-        
-        total_count.append(count)       # append all values to a list
+        R = R_list[i]                                       # getting the current R value
+        C = C_list[i]                                       # getting the current C value
+        X_points = X_points_poses[i]                        # getting the current X value
 
+        r_3 = R[:, 2]                                       # getting the current r3 value
 
-    
-    total_count = np.array(total_count) # converting the list to array.
-    
-    idx = np.argmax(total_count)        # get the max idx of the all. 
+        count = 0                                           # initializing a counter
+        num_points = len(X_points)
 
-    R_cheiral = R[idx]                  # get the final value of R.
-    
-    C_cheiral = C[idx]                  # get the final value of Camera Pose between two camera.
-    
-    X_cheiral = X[:, idx]               # get the final coordinates of the World Points.
+        for j in range(num_points):                         # looping over all triangulated points to check cheirality
 
-    P_chieral = P[idx]
+            X = X_points[j]                                 # current point
+            z = X[2]                                        # points are in the form [x, y, z]
 
+            cond_1 = r_3.T @ (X.T - C) > 0                  # The cheirality condition
+            cond_2 = z > 0                                  # is Z point positive (in front of image plane)
 
-    return R_cheiral, C_cheiral, X_cheiral, P_chieral
+            if cond_1 and cond_2 > 0:
+
+                count = count + 1                           # if yes consider it
+
+        total_count.append(count)                           # append all values to a list after checking all points
+
+    # print('total count: ', total_count)
+    total_count = np.array(total_count)                     # converting the list to array.
+    idx = np.argmax(total_count)                            # get the max idx of the all.
+
+    R_correct = R_list[idx]                                 # get the final value of R
+    C_correct = C_list[idx]                                 # get the final value of Camera Pose
+    X_correct = X_points_poses[idx]                         # get the final coordinates of the World Points
+
+    return C_correct, R_correct, X_correct, idx
 
 
 

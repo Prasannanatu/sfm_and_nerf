@@ -53,6 +53,8 @@ def linear_triangulation(K, C, R, best_matched_points):
         X_pt = X_pt / X_pt[3]
         # print('X_pt: ', X_pt)
 
+        X_pt = X_pt[0:3]                    # discard the fourth value to make non homogeneous coordinates
+
         X_pts.append(X_pt)
 
     return X_pts

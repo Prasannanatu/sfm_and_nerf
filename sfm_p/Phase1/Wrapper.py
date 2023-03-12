@@ -20,7 +20,8 @@ from EstimateFundamentalMatrix import *
 from EssentialMatrixFromFundamentalMatrix import * 
 from misc import *
 from ExtractCameraPose import *
-from LinearTriangulation import * 
+from LinearTriangulation import *
+from DisambiguateCameraPose import *
 
 
 def main():
@@ -62,14 +63,22 @@ def main():
     # print('C: ', C_list)
     # print('R: ', R_list)
 
-    X_points_1 = linear_triangulation(K, C_list[0], R_list[0], best_matched_points_1_2)
-    X_points_2 = linear_triangulation(K, C_list[1], R_list[1], best_matched_points_1_2)
-    X_points_3 = linear_triangulation(K, C_list[2], R_list[2], best_matched_points_1_2)
-    X_points_4 = linear_triangulation(K, C_list[3], R_list[3], best_matched_points_1_2)
+    X_points_poses = []
 
-    visualize_points_2D(X_points_1, X_points_2, X_points_3, X_points_4)
+    for i in range(4):                  # triangulate points for all four possible camera poses
+        X_points_i = linear_triangulation(K, C_list[i], R_list[i], best_matched_points_1_2)
+        X_points_poses.append(X_points_i)
 
+    # print('X points: ', X_points_poses)
 
+    # Disambiguate between the four calculated camera poses using the chierality condition
+    C, R, X_points, index = disambiguate_camera_poses(C_list, R_list, X_points_poses)
+
+    # print('C correct: ', C)
+    # print('R correct: ', R)
+    print('index: ', index)
+
+    visualize_points_2D(X_points_poses[0], X_points_poses[1], X_points_poses[2], X_points_poses[3])
 
 
     # R, T, P, C = extract_camera_pose(K, E)
