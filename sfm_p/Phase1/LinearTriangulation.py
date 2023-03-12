@@ -92,6 +92,33 @@ def visualize_points_2D(points_list_1, points_list_2, points_list_3, points_list
     plt.show()
 
 
+def visualize_points_lin_nonlin(points_list_1, points_list_2):
+
+    points_list_1 = np.asarray(points_list_1)               # use numpy to efficiently get all rows of a column
+    points_list_2 = np.asarray(points_list_2)
+
+    x_pts_1, y_pts_1, z_pts_1 = points_list_1[:, 0], points_list_1[:, 1], points_list_1[:, 2]
+    x_pts_2, y_pts_2, z_pts_2 = points_list_2[:, 0], points_list_2[:, 1], points_list_2[:, 2]
+
+    # Creating plot
+    # fig = plt.Figure()
+    dot_size = 1
+    axes_lim = 20
+
+    plt.scatter(x_pts_1, z_pts_1, color="red", s=dot_size)
+    plt.scatter(x_pts_2, z_pts_2, color="blue", s=dot_size)
+
+    plt.title("triangulated world points")
+    plt.xlim(-axes_lim, axes_lim)
+    plt.ylim(-5, 30)
+    plt.xlabel("x (dimensionless)")
+    plt.ylabel("z (dimensionless)")
+    plt.legend(["Linear", "Nonlinear"])
+
+    # show plot
+    plt.show()
+
+
 def visualize_points_3D(points_list_1, points_list_2, points_list_3, points_list_4):
 
     points_list_1 = np.asarray(points_list_1)  # use numpy to efficiently get all rows of a column

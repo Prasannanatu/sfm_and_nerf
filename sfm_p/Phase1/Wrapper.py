@@ -22,6 +22,7 @@ from misc import *
 from ExtractCameraPose import *
 from LinearTriangulation import *
 from DisambiguateCameraPose import *
+from NonlinearTriangulation import *
 
 
 def main():
@@ -76,20 +77,15 @@ def main():
 
     # print('C correct: ', C)
     # print('R correct: ', R)
-    print('index: ', index)
+    # print('index: ', index)
 
-    visualize_points_2D(X_points_poses[0], X_points_poses[1], X_points_poses[2], X_points_poses[3])
+    # visualize_points_2D(X_points_poses[0], X_points_poses[1], X_points_poses[2], X_points_poses[3])
 
+    # refine the triangulated points using a nonlinear estimator with the points as initial conditions
+    X_points_corrected = non_linear_triangulation(K, C, R, best_matched_points_1_2, X_points)
 
-    # R, T, P, C = extract_camera_pose(K, E)
-    # print('R: ', R)
-    # print('T: ', T)
-    # print('P: ', P)
-    # print('C: ', C)
-
-
-    # X = linearTriangulation(R,T,P,K,matched_points_1_2[0],matched_points_1_2[1])
-    # print(X)
+    # print('X points corrected: ', X_points_corrected)
+    visualize_points_lin_nonlin(X_points, X_points_corrected)
 
 
 

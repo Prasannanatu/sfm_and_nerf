@@ -72,8 +72,8 @@ def get_inliers_RANSAC(matched_points):
     """
 
     iterations = 1000                                   # iterations of RANSAC to attempt unless found enough good paris
-    epsilon = 0.002                                     # threshold for fundamental matrix transforming
-    percent_good_matches = 0.6                          # what percentage of num_matches are enough to stop iterating
+    epsilon = 0.006                                     # threshold for fundamental matrix transforming
+    percent_good_matches = 0.9                          # what percentage of num_matches are enough to stop iterating
 
     matched_points = np.asarray(matched_points)         # use numpy for efficiently getting all rows of a column
     num_matches = len(matched_points)                   # number of matching feature coordinates between the images

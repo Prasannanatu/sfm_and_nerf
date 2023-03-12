@@ -3,51 +3,97 @@ from misc import *
 from scipy.optimize import least_squares
 
 
-
-def get_reoprojection_error_total(vec1, vec2, X, P, K):
+def non_linear_triangulation(K, C, R, best_matched_points, X_points):
     """
-    Inputs: vector1 and vector 2  are the two feature_match coordinates of two respective images
-            
-    
+    Refine the world points triangulated from two image views by minimizing the re-projection error
+    using scipy.optimize.least_squares()
+    :param K: camera intrinsic matrix of calibrated parameters
+    :param C: camera origin position vector also known as T
+    :param R: camera orientation expressed as a rotation matrix
+    :param best_matched_points: filtered best matched image plane points between the two views
+    :param X_points: world points triangulated using linear_triangulation()
+    :return: the list of refined world points
     """
-    error = []
-    ones = np.identity(3)
-    R_0 = np.identity(3)
-    C_0 = np.zeros(3,3)
-    T_0 = np.hstack(ones, C_0)
-    P_0 = K @ R_0 @ T_0
-    Xw_optimised = []
-    for i in range(vec1.shape[0]):
-        error_1 = reprojection_error(vec1[i],X[i], P_0)
-        error_2 = reprojection_error(vec2[i],X[i],P) 
-        error= [error_1, error_2]
-        output = least_squares(error, x0 = X[i],method = 'lm', kwargs={vec1, vec2, P_0, P})
-        Xw_optimised.append(output.x)
 
-    Xw_optimised = np.vstack(Xw_optimised)
-    Xw_optimised = Xw_optimised/Xw_optimised[3]
-    Xw_optimised = get_unhomogenous_coordinates(Xw_optimised)
-    return Xw_optimised
+    num_points = len(X_points)
+
+    # Convert to homogenous coordinates
+    X_points = get_homogenous_coordinates(X_points)
+
+    # Calculate the camera pose from the position vector and rotation matrix
+    C = C.reshape((3, 1))                               # make into column vector
+    Identity = np.identity(3)                           # identity matrix
+    I_C = np.append(Identity, -C, axis=1)               # [3 x 4] matrix
+
+    P = K @ R @ I_C
+
+    # Calculate the pose for the camera at the origin, the assumed location of the camera that captured u_v_1
+    R_O = Identity
+    C_O = np.zeros((3, 1))
+    I_C_O = np.append(Identity, C_O, axis=1)
+    P_O = K @ R_O @ I_C_O
+
+    X_points_nonlin = []
+
+    # Optimize every point in X_points to get the list of refined points x_points_nonlin
+    for i in range(num_points):
+
+        X = X_points[i]                                 # current point used as initial guess
+
+        X_opt = least_squares(error_function, x0=X, method='lm',
+                              args=(best_matched_points, P, P_O, i))
+
+        X_points_nonlin.append(X_opt.x)
+
+    return X_points_nonlin
 
 
-
-
-
-    return 0
-
-def reprojection_error(v,X,P):
+def error_function(x, best_matched_points, P, P_0, point_index):
     """
-    Its a geometric error between the actual image point and reprojected points from the world
-    Inputs: The actual image coordinates and reporjected points
+    Error function to be used in scipy.optimize.least_squares()
+    :param x: the vector of parameters to find through the optimization, initial guess is known as x0
+    :param best_matched_points: filtered best matched image plane points between the two views
+    :param P: computed projection matrix of the second image
+    :param P_0: computed projection matrix of the first image at the origin
+    :param point_index: the index of the current point in best_matches_points
+    :return: the vector of parameter errors for recomputing in scipy.optimize.least_squares()
+    """
 
-    Outputs: The error between those two points
-    """ 
-    #Getting the reporjected points of the image
-    v_reproj= X.T @ P
-    v_reproj = v/v[2]
-    reprojected_error = (v-v_reproj)**2
-    reprojected_error =  reprojected_error[0:2]
+    # best_matched_points = np.asarray(best_matched_points)
+    u_v_1 = best_matched_points[:, 0]
+    u_v_2 = best_matched_points[:, 1]
 
-    return reprojected_error
+    point_1 = u_v_1[point_index]
+    point_2 = u_v_2[point_index]
+
+    error_reproj_1 = get_reprojection_error(point_1, x, P_0)
+    error_reproj_2 = get_reprojection_error(point_2, x, P)
+
+    error = np.concatenate((error_reproj_1, error_reproj_2))
+
+    return error
+
+
+def get_reprojection_error(point_image, point_world, P):
+    """
+    Geometric error between the actual image point and reprojected points from the world
+    :param point_image: image point coordinates (u, v) or (x, y)
+    :param point_world: world point coordinates [x, y, z]
+    :param P: projection matrix to transform between point_image and point_world
+    :return: the re-projection error of (P * point_world) - point_image
+    """
+
+    # [x, y] to [x, y, 1] for homogeneous coordinates
+    point_image = np.array([point_image[0], point_image[1], 1], np.float32)
+
+    point_reproj = P @ point_world.T                    # getting the reporjected points of the image
+
+    point_reproj = point_reproj / point_reproj[2]       # must divide x and y by z to get 2D points again
+
+    error_reproj = (point_reproj - point_image) ** 2
+
+    error_reproj = error_reproj[0:2]
+
+    return error_reproj
 
 

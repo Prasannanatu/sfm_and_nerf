@@ -47,7 +47,7 @@ def extract_camera_pose(E):
     # Enforcing right-hand coordinate system, determinant of rotation matrices must be 1 not -1
     for i, R in enumerate(R_list):
         det_R = np.linalg.det(R)
-        print('Det of R' + str(i) + ': ' + str(det_R))
+        # print('Det of R' + str(i) + ': ' + str(det_R))
         if det_R < 0:
             R_list[i] = -R                      # invert the values
             C_list[i] = -C_list[i]
