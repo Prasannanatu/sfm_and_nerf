@@ -21,7 +21,7 @@ def linear_PnP(K, feature_points, X_points):
     ones = np.ones_like(X)            # vector of zeros the length of X_points
 
     # Formulate the system of equations to solve using SVD
-    # TODO where does this come from?
+    # DLT (Direct Linear Transformation) from Unsupervised Deep Homography paper Ty Nguyen et. all
     A1 = np.vstack([X, Y, Z, ones, zeros, zeros, zeros, zeros, -u * X, -u * Y, -u * Z, -u]).T
     A2 = np.vstack([zeros, zeros, zeros, zeros, X, Y, Z, ones, -v * X, -v * Y, -v * Z, -v]).T
     A = np.vstack([A1, A2])
@@ -32,17 +32,17 @@ def linear_PnP(K, feature_points, X_points):
     P = P.reshape((3, 4))                               # reshape to form the projection matrix P [3 x 4]
 
     # Compute the rotation matrix R
-    # TODO why P[0:3,0:3] ?
+    R_camera = P[0:3, 0:3]
     K_inv = np.linalg.inv(K)
-    R = K_inv @ P[0:3, 0:3]
+    R = K_inv @ R_camera
 
     U_R, D_R, V_T_R = np.linalg.svd(R)                  # output matrix V_T_R is shape [3 x 3]
     R = U_R @ V_T_R                                     # enforcing orthogonality
 
     lamda = D_R[0]                                      # scale factor is first singular value
 
-    # TODO why P[:, 3] ?
-    T = K_inv @ P[:, 3] / lamda
+    t = P[:, 3]
+    T = K_inv @ t / lamda
 
     # Enforcing right-hand coordinate system, determinant of rotation matrices must be 1 not -1
     R_det = np.linalg.det(R)
