@@ -52,7 +52,8 @@ def main():
     F, best_matched_points_1_2 = get_inliers_RANSAC(matched_points_1_2)
     print("F: ", F)
     print('num best matched points: ', len(best_matched_points_1_2))
-    # visualize_matches(image_num, matched_image_num, best_matched_points_1_2)
+
+    visualize_matches(image_num, matched_image_num, best_matched_points_1_2)
 
     K = get_K()
     # print("K: ", K)
@@ -81,11 +82,13 @@ def main():
 
     # visualize_points_2D(X_points_poses[0], X_points_poses[1], X_points_poses[2], X_points_poses[3])
 
-    # refine the triangulated points using a nonlinear estimator with the points as initial conditions
+    # Refine the triangulated points using a nonlinear estimator with the points as initial conditions
     X_points_corrected = non_linear_triangulation(K, C, R, best_matched_points_1_2, X_points)
 
     # print('X points corrected: ', X_points_corrected)
     visualize_points_lin_nonlin(X_points, X_points_corrected)
+
+    # Perform Perspective-n-Point to estimate the poses of new cameras capturing the scene
 
 
 

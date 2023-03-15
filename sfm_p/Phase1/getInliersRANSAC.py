@@ -72,8 +72,8 @@ def get_inliers_RANSAC(matched_points):
     """
 
     iterations = 1000                                   # iterations of RANSAC to attempt unless found enough good paris
-    epsilon = 0.006                                     # threshold for fundamental matrix transforming
-    percent_good_matches = 0.9                          # what percentage of num_matches are enough to stop iterating
+    epsilon = 0.05                                      # threshold for fundamental matrix transforming
+    percent_good_matches = 0.99                         # what percentage of num_matches are enough to stop iterating
 
     matched_points = np.asarray(matched_points)         # use numpy for efficiently getting all rows of a column
     num_matches = len(matched_points)                   # number of matching feature coordinates between the images
@@ -129,21 +129,16 @@ def get_inliers_RANSAC(matched_points):
             point = np.array([x_pt, y_pt, 1], np.float32)
             point_prime = np.array([x_pt_prime, y_pt_prime, 1], np.float32)
 
-            point = np.transpose(point)         # for computing x_prime * F * x
+            F_pt = F @ point.T
+            F_pt = F_pt.T
 
-            pt_prime_F = np.matmul(point_prime, F)
+            pt_prime_F_pt = np.multiply(point_prime, F_pt)
 
-            # Must divide x and y by z to get 2D points again
-            if pt_prime_F[2] == 0:  # prevent divide by zero error
-                pt_prime_F[2] = 0.0000001
-            p_x = pt_prime_F[0] / pt_prime_F[2]
-            p_y = pt_prime_F[1] / pt_prime_F[2]
-            pt_prime_F = np.array([p_x, p_y, 1], np.float32)
+            error = np.sum(pt_prime_F_pt)
 
-            pt_prime_F_pt = np.matmul(pt_prime_F, point)
-
-            if abs(pt_prime_F_pt) < epsilon:
+            if abs(error) < epsilon:
                 # print(pt_prime_F_pt)
+                # print('error: ', error)
                 # paris_indices.append(i)
                 num_good_matches += 1
                 good_match = [[x_pt, y_pt], [x_pt_prime, y_pt_prime]]

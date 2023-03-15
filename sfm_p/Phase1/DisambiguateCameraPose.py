@@ -36,7 +36,7 @@ def disambiguate_camera_poses(C_list, R_list, X_points_poses):
             cond_1 = r_3.T @ (X.T - C) > 0                  # The cheirality condition
             cond_2 = z > 0                                  # is Z point positive (in front of image plane)
 
-            if cond_1 and cond_2 > 0:
+            if cond_1 and cond_2:
 
                 count = count + 1                           # if yes consider it
 
