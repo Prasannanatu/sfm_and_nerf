@@ -1,6 +1,8 @@
 import numpy as np
 import math
 import random
+from scipy.spatial.transform import Rotation
+from scipy.sparse import lil_matrix
 
 
 def skew_matrix(x):
@@ -84,8 +86,21 @@ def find_matching_points(world_points_1, matched_points_1_2, matched_points_1_3,
     world_points_1_3 = world_points_1[indices_1]
 
     return uv_13, world_points_1_3
-    
-    
 
 
-    
+def get_Rotation(Q, type_='q'):
+    if type_ == 'q':
+        R = Rotation.from_quat(Q)
+        return R.as_matrix()
+
+    elif type_ == 'e':
+        R = Rotation.from_rotvec(Q)
+        return R.as_matrix()
+
+
+def Rotation_on_euler(R):
+    euller = Rotation.from_matrix(R)
+
+    return euller.as_rotvec()
+
+

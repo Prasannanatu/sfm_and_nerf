@@ -86,10 +86,10 @@ def main():
 
     # Refine the triangulated points using a nonlinear estimator with the points as initial conditions
     X_points_corrected = non_linear_triangulation(K, C, R, best_matched_points_1_2, X_points)
-    X_points_corr_unhomo = get_unhomogenous_coordinates(X_points_corrected)
+    # X_points_corr_unhomo = get_unhomogenous_coordinates(X_points_corrected)
 
     # print('X points corrected: ', X_points_corrected)
-    # visualize_points_lin_nonlin(X_points, X_points_corrected)
+    visualize_points_lin_nonlin(X_points, X_points_corrected)
 
     # Perform Perspective-n-Point to estimate the poses of new cameras capturing the scene
     C0 = np.zeros(3)
