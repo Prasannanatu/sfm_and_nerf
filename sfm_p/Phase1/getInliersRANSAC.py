@@ -64,6 +64,15 @@ def parse_matches_file(image_num, matched_image_num):
     return image_feature_points, RGB_vals
 
 
+def get_inliers(image_1, image_2):
+
+    matched_points, _ = parse_matches_file(image_1, image_2)
+    _, refined_points = get_inliers_RANSAC(matched_points)
+
+    return np.asarray(refined_points)
+
+
+
 def get_inliers_RANSAC(matched_points):
     """
     Perform the RANSAC algorithm using the fundamental matrix to estimate inlier correspondences between image pairs

@@ -43,7 +43,9 @@ def non_linear_triangulation(K, C, R, best_matched_points, X_points):
         X_opt = least_squares(error_function, x0=X, method='lm',
                               args=(best_matched_points, P, P_O, i))
 
-        X_points_nonlin.append(X_opt.x)
+        X_opt = X_opt.x/X_opt.x[-1]     # divide by last value homoginize
+
+        X_points_nonlin.append(X_opt)
 
     return X_points_nonlin
 

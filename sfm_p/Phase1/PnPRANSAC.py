@@ -1,49 +1,66 @@
 import numpy as np
+import random
 from LinearPnP import *
 from misc import *
 
 
 def PnP_RANSAC(K, feature_points, X_points):
     """
-    Perform the RANSAC algorithm using the
+    Perform the RANSAC algorithm using linear PnP
     :param K: camera intrinsic matrix of calibrated parameters
     :param feature_points: image plane feature points
     :param X_points: world points corresponding to the 2D image feature_points
     :return: the best C vector and R matrix of the new camera
     """
 
-    iterations = 1000
-    threshold = 1
+    iterations = 5000
+    threshold = 10
 
-    homogenized_world_points = get_homogenous_coordinates(X_points)
-    u, v = feature_points.T
+    num_points = feature_points.shape[0]
+
+    # world_points_homogen = get_homogenous_coordinates(X_points)
+    world_points_homogen = X_points
+
+    u = feature_points[:, 0]
+    v = feature_points[:, 1]
+    # print('feature points:', feature_points)
+
     max_inliers = []
 
-    for iter in range(iterations):
-        # sample 6 random points assuming they are inliers
-        sample_inds = np.random.sample(range(feature_points.shape[0]-1), 6)
-        sample_features = feature_points[sample_inds, :]
-        sample_world_points = X_points[sample_inds, :]
+    for index in range(iterations):                                        # index iterator variable non-use intentional
 
+        # Select 6 points at random
+        random_indeces = random.sample(range(num_points - 1), 6)
+
+        sample_features = feature_points[random_indeces, :]
+        sample_world_points = X_points[random_indeces, :]
+
+        # Perform linear PnP to calculate the pose of the camera
         R, C = linear_PnP(K, sample_features, sample_world_points)
 
-        T = -R @ C.reshape((3, 1))
-        P = K @ np.concatenate((R,T), axis=1)
-        P1, P2, P3 = P  # 4, 4, 4,
+        C = C.reshape((3, 1))
 
-        u_num = np.dot(P1, homogenized_world_points.T)  # N,
-        v_num = np.dot(P2, homogenized_world_points.T)  # N,
-        denom = np.dot(P3, homogenized_world_points.T)  # N,
+        T = -R @ C
+        R_T = np.concatenate((R, T), axis=1)
+        P = K @ R_T
+        P_1, P_2, P_3 = P
 
-        u_ = u_num / denom
-        v_ = v_num / denom
+        u_numerator = np.dot(P_1, world_points_homogen.T)
+        v_numerator = np.dot(P_2, world_points_homogen.T)
 
-        error = (u - u_) ** 2 + (v - v_) ** 2
+        denominator = np.dot(P_3, world_points_homogen.T)
 
-        # check if error is below some threshold for rest of the points
-        curr_inliers = abs(error) < threshold # N,
-        if np.sum(curr_inliers) > np.sum(max_inliers):
-            max_inliers = curr_inliers
+        u_ = u_numerator / denominator
+        v_ = v_numerator / denominator
+
+        error = np.sqrt( (u - u_) ** 2 + (v - v_) ** 2 )
+
+        current_inliers = abs(error) < threshold
+        inliers_sum = np.sum(current_inliers)
+        max_inliers_sum = np.sum(max_inliers)
+
+        if inliers_sum > max_inliers_sum:
+            max_inliers = current_inliers
 
     feature_inliers = feature_points[max_inliers]
     world_point_inliers = X_points[max_inliers]

@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from misc import *
 #import pry
+from scipy.spatial.transform import Rotation
 
 
 def linear_triangulation(K, C, R, best_matched_points):
@@ -114,6 +115,41 @@ def visualize_points_lin_nonlin(points_list_1, points_list_2):
     plt.xlabel("x (dimensionless)")
     plt.ylabel("z (dimensionless)")
     plt.legend(["Linear", "Nonlinear"])
+
+    # show plot
+    plt.show()
+
+
+def visualize_points_camera_poses(points_list, R_set, C_set):
+
+    points_list = np.asarray(points_list)               # use numpy to efficiently get all rows of a column
+    # points_list_2 = np.asarray(points_list_2)
+
+    x_pts_1, y_pts_1, z_pts_1 = points_list[:, 0], points_list[:, 1], points_list[:, 2]
+    # x_pts_2, y_pts_2, z_pts_2 = points_list_2[:, 0], points_list_2[:, 1], points_list_2[:, 2]
+
+    # Creating plot
+    # ax = plt.axes(projection="3d")
+    # fig = plt.Figure()
+    dot_size = 1
+    axes_lim = 20
+
+    plt.scatter(x_pts_1, z_pts_1, color="blue", s=dot_size)
+    # plt.scatter(x_pts_2, z_pts_2, color="blue", s=dot_size)
+
+    for i in range(len(R_set)):
+
+        r2 = Rotation.from_matrix(R_set[i])
+        angles2 = r2.as_euler("zyx", degrees=True)
+
+        plt.plot(C_set[i][0], C_set[i][2], marker=(3, 0, int(angles2[1])), markersize=15, linestyle='None')
+
+    plt.title("triangulated world points")
+    plt.xlim(-axes_lim, axes_lim)
+    plt.ylim(-5, 30)
+    plt.xlabel("x (dimensionless)")
+    plt.ylabel("z (dimensionless)")
+    # plt.legend(["Linear", "Nonlinear"])
 
     # show plot
     plt.show()
