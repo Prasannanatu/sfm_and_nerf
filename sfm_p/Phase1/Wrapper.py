@@ -23,6 +23,8 @@ from ExtractCameraPose import *
 from LinearTriangulation import *
 from DisambiguateCameraPose import *
 from NonlinearTriangulation import *
+import matplotlib
+matplotlib.use('tkagg')
 
 
 def main():
@@ -53,7 +55,7 @@ def main():
     print("F: ", F)
     print('num best matched points: ', len(best_matched_points_1_2))
 
-    visualize_matches(image_num, matched_image_num, best_matched_points_1_2)
+    # visualize_matches(image_num, matched_image_num, best_matched_points_1_2)
 
     K = get_K()
     # print("K: ", K)
@@ -72,7 +74,7 @@ def main():
         X_points_poses.append(X_points_i)
 
     # print('X points: ', X_points_poses)
-
+    print(X_points_poses)
     # Disambiguate between the four calculated camera poses using the chierality condition
     C, R, X_points, index = disambiguate_camera_poses(C_list, R_list, X_points_poses)
 

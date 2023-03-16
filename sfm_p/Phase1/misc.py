@@ -1,6 +1,8 @@
 import numpy as np
 import math
 import random
+from scipy.spatial.transform import Rotation
+from scipy.sparse import lil_matrix
 
 
 def skew_matrix(x):
@@ -49,6 +51,22 @@ def get_K():
     # k =np.asarray(K)
     # k.reshape((3,3))
     return K
+
+
+def get_Rotation(Q, type_ = 'q'):
+    if type_ == 'q':
+        R = Rotation.from_quat(Q)
+        return R.as_matrix()
+    
+    elif type_ == 'e':
+        R = Rotation.from_rotvec(Q)
+        return R.as_matrix()
+    
+
+def Rotation_on_euler(R):
+    euller = Rotation.from_matrix(R)
+
+    return euller.as_rotvec()
 
         
     

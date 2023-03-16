@@ -1,6 +1,8 @@
 import numpy as np
 from misc import *
 from scipy.optimize import least_squares
+import matplotlib
+matplotlib.use('tkagg')
 
 
 def non_linear_triangulation(K, C, R, best_matched_points, X_points):
@@ -16,7 +18,8 @@ def non_linear_triangulation(K, C, R, best_matched_points, X_points):
     """
 
     num_points = len(X_points)
-
+    p1 = best_matched_points[:, 0]
+    p2 = best_matched_points[:, 1]
     # Convert to homogenous coordinates
     X_points = get_homogenous_coordinates(X_points)
 
@@ -34,21 +37,26 @@ def non_linear_triangulation(K, C, R, best_matched_points, X_points):
     P_O = K @ R_O @ I_C_O
 
     X_points_nonlin = []
+    print(f"the best matches point{best_matched_points}")
+    print(f"the best matches point{best_matched_points[0]}")
+    print(f"the best matches point{best_matched_points[1]}")
 
     # Optimize every point in X_points to get the list of refined points x_points_nonlin
     for i in range(num_points):
 
         X = X_points[i]                                 # current point used as initial guess
 
-        X_opt = least_squares(error_function, x0=X, method='lm',
-                              args=(best_matched_points, P, P_O, i))
+        # X_opt = least_squares(error_function, x0=X, method='trf',
+        #                       args=[p1,p2 , P, P_O])
+        X_opt = least_squares(lambda x: error_function(x, p1,p2, P, P_O, i), x0=X, method='trf')
+
 
         X_points_nonlin.append(X_opt.x)
 
     return X_points_nonlin
 
 
-def error_function(x, best_matched_points, P, P_0, point_index):
+def error_function(x, p1,p2, P, P_0, point_index):
     """
     Error function to be used in scipy.optimize.least_squares()
     :param x: the vector of parameters to find through the optimization, initial guess is known as x0
@@ -60,11 +68,11 @@ def error_function(x, best_matched_points, P, P_0, point_index):
     """
 
     # best_matched_points = np.asarray(best_matched_points)
-    u_v_1 = best_matched_points[:, 0]
-    u_v_2 = best_matched_points[:, 1]
+    # u_v_1 = best_matched_points[:, 0]
+    # u_v_2 = best_matched_points[:, 1]
 
-    point_1 = u_v_1[point_index]
-    point_2 = u_v_2[point_index]
+    point_1 = p1[point_index]
+    point_2 = p2[point_index]
 
     error_reproj_1 = get_reprojection_error(point_1, x, P_0)
     error_reproj_2 = get_reprojection_error(point_2, x, P)
