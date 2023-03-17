@@ -235,7 +235,7 @@ def visualize_matches(num_image_1, num_image_2, matched_points):
     im = cv2.resize(image_1_2, (int(width), int(height)))
 
     # Save as "".png
-    # cv2.imwrite('' + '.png', image)
+    cv2.imwrite('Filtered matches' + '.png', im)
     cv2.imshow("Matches visualizing", im)
     cv2.waitKey(0)
 

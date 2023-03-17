@@ -76,11 +76,11 @@ def find_matching_points(world_points_1, matched_points_1_2, matched_points_1_3,
     x = u_v_1_12[indices]                   # get those points from 1_2 using the indices
 
     mask_ = np.isin(u_v_1_13, x)
-    indices_1 = np.where(mask_ == 1)[0]      # the indices of 1_3 which
+    indices_1 = np.where(mask_ == 1)[0]      # the indices of 1_3 which also exist in 1_2
     indices_1 = np.unique(indices_1)
 
     # uv_13 = u_v_1_13[indices_1]
-    uv_13 = u_v_1_3[indices_1]
+    uv_13 = u_v_1_3[indices_1]              # get the final image point correspondences
     # print("mached points_13: ", uv_13)
 
     world_points_1_3 = world_points_1[indices_1]

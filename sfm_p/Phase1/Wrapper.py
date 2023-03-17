@@ -25,12 +25,16 @@ from PnPRANSAC import *
 from DisambiguateCameraPose import *
 from NonlinearTriangulation import *
 from NonlinearPnP import *
+from BuildVisibilityMatrix import *
 
 
 def main():
     """
 
     """
+
+    feature_flags, idx = get_feature_flags()
+    print('flags: ', feature_flags.shape)
 
     image_num = 1
     matched_image_num = 2
@@ -55,7 +59,7 @@ def main():
     print("F: ", F)
     print('num best matched points: ', len(best_matched_points_1_2))
 
-    # visualize_matches(image_num, matched_image_num, best_matched_points_1_2)
+    visualize_matches(image_num, matched_image_num, best_matched_points_1_2)
 
     K = get_K()
     # print("K: ", K)
@@ -89,7 +93,7 @@ def main():
     # X_points_corr_unhomo = get_unhomogenous_coordinates(X_points_corrected)
 
     # print('X points corrected: ', X_points_corrected)
-    visualize_points_lin_nonlin(X_points, X_points_corrected)
+    # visualize_points_lin_nonlin(X_points, X_points_corrected)
 
     # Perform Perspective-n-Point to estimate the poses of new cameras capturing the scene
     C0 = np.zeros(3)
@@ -105,6 +109,8 @@ def main():
     C_set.append(C)
     X_points_set.append(X_points_corrected)
 
+    image_points_set = []
+
     # Loop over the remaining images 2 - 5
     for image_num in range(3, 6):
 
@@ -115,6 +121,8 @@ def main():
         u_v_1_i = best_matched_points_1_i[:, 1]
 
         uv_1i, world_points_1_i = find_matching_points(X_points_corrected, u_v_1_12, u_v_1_1i, u_v_1_i)
+
+        #
 
         R_new, C_new = PnP_RANSAC(K, uv_1i, world_points_1_i)
 
@@ -130,6 +138,10 @@ def main():
         X_new_linear = linear_triangulation(K, C_opt, R_opt, best_matched_points_1_i)
         X_points_nonlin = non_linear_triangulation(K, C_opt, R_opt, best_matched_points_1_i, X_new_linear)
         X_points_set.append(X_points_nonlin)
+
+        # Visibility matrix
+        # V = build_visibility_matrix(X_points_set[0], feature_flags, image_num, idx)
+        # print("V mat for image ", str(image_num), " : ", V)
 
     visualize_points_camera_poses(X_points_set[0], R_set, C_set)
 
