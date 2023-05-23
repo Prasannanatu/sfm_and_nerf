@@ -2,7 +2,11 @@
 # Structure from Motion (SfM) and Neural Radiance Fields (NeRF) Project
 
 <!-- ![Project Output](./NeRF/test_gif.gif) -->
-<img src="./NeRF/test_gif.gif" width="500" height="600">
+<!-- <img src="./NeRF/test_gif.gif" width="500" height="600"> -->
+<p float="left">
+  <img src="./NeRF/test_gif.gif" width="400" />
+  <img src="/path/to/image2.png" width="400" /> 
+</p>
 
 
 This repository hosts the academic project exploring computer graphics for 3D rendering with Neural Radiance Fields (NeRF) and Structure from Motion (SfM) techniques.
