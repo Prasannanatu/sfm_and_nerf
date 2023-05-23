@@ -58,4 +58,4 @@ To run the project locally, follow these steps:
 1. Clone the repository:
 
 ```shell
-git clone <(https://github.com/Prasannanatu/sfm_and_nerf.git)>
+git clone https://github.com/Prasannanatu/sfm_and_nerf.git
