@@ -20,12 +20,12 @@
 
 This repository hosts the academic project exploring computer graphics for 3D rendering with Neural Radiance Fields (NeRF) and Structure from Motion (SfM) techniques.
 
-#Table of Contents
-About The Project
-Repository Structure
-Technologies
-Installation & Usage
-Contributing
+## Table of Contents
+- [About The Project](#about-the-project)
+- [Repository Structure](#repository-structure)
+- [Technologies](#technologies)
+- [Installation & Usage](#installation--usage)
+- [Contributing](#contributing)
 
 
 ## About The Project
