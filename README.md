@@ -5,7 +5,7 @@
 <!-- <img src="./NeRF/test_gif.gif" width="500" height="600"> -->
 <p float="left">
   <img src="./NeRF/test_gif.gif" width="400" />
-  <img src="/path/to/image2.png" width="400" /> 
+  <img src="./sfm_p/Phase1/outputs/Registered camera poses with nonlinear PnP2.png" width="400" /> 
 </p>
 
 
