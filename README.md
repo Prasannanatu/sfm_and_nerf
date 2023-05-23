@@ -84,4 +84,13 @@ Run the project using the provided scripts or commands. Refer to the documentati
 4. RBE-549 Course Project Page. [Link](https://rbe549.github.io/spring2023/proj/p2/)
 
 
+## Tags
+
+- Computer Graphics
+- Comupter Vision
+- 3D Reconstruction
+- Neural Radiance Fields
+- Structure from Motion
+- View Synthesis
+
 
