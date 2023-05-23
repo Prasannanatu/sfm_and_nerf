@@ -63,9 +63,25 @@ To run the project locally, follow these steps:
 git clone https://github.com/Prasannanatu/sfm_and_nerf.git
  ```
  
-Install the required dependencies. (Provide instructions or a script if necessary)
+Install the required dependencies. You can use the provided requirements.txt file to install the necessary packages. Run the following command:
 
-Run the project using the provided scripts or commands. (Specify the commands or scripts if applicable)
+
+```shell
+pip install -r requirements.txt
+ ```
+ 
+ 
+Run the project using the provided scripts or commands. Refer to the documentation or project files for specific instructions on running the SfM and NeRF algorithms.
+
+## References
+
+1. Wikipedia. "Eight-point Algorithm." [Link](https://en.wikipedia.org/wiki/Eight-point_algorithm)
+
+2. Hartley, R. and Zisserman, A. "Multiple View Geometry in Computer Vision." Second Edition, Cambridge University Press, 2003. [Link](http://users.cecs.anu.edu.au/~hongdong/new5pt_cameraREady_ver_1.pdf)
+
+3. Mildenhall, B., Srinivasan, P. P., Tancik, M., Barron, J. T., Ramamoorthi, R., Ng, R. "NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis." ACM Transactions on Graphics (TOG), Vol. 39, No. 2, Article No. 24, 2020. [Link](https://arxiv.org/abs/2003.08934)
+
+4. RBE-549 Course Project Page. [Link](https://rbe549.github.io/spring2023/proj/p2/)
 
 
 
