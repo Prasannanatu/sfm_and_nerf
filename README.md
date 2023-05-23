@@ -39,9 +39,11 @@ Generate a 3D reconstruction of the scene using the combined SfM and NeRF techni
 ## Repository Structure
 The repository is structured as follows:
 
-- `/src`: This folder contains all the source code for the project, including implementations of SfM and NeRF algorithms.
+- `/NeRF`: This folder contains all the source code for the Neural Radiance field, including implementations of NeRF algorithm.
+- `/sfm_p`: This folder contains all the source code for the Structure from Motion, including implementations of SFM algorithm.
 - `/report`: This folder contains the academic report documenting the project, including the methodology, experimental results, and conclusions.
-- `/data`: This folder contains the image dataset used for the project.
+- `/sfm_p/Data`: This folder contains the data provided on the course project page [here](https://drive.google.com/file/d/1DLdCpX5ojtSN4RjYZ2UwpV2fAJn3sX_k/view)
+- For NeRF Please download dataset from the project page[here](https://rbe549.github.io/spring2023/proj/p2/) or tinynerf dataset from [here](https://people.eecs.berkeley.edu/~bmild/nerf/tiny_nerf_data.npz)
 
 ## Technologies
 The project utilizes the following technologies:
@@ -59,3 +61,11 @@ To run the project locally, follow these steps:
 
 ```shell
 git clone https://github.com/Prasannanatu/sfm_and_nerf.git
+ ```
+ 
+Install the required dependencies. (Provide instructions or a script if necessary)
+
+Run the project using the provided scripts or commands. (Specify the commands or scripts if applicable)
+
+
+
