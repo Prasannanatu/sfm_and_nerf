@@ -19,6 +19,8 @@
 
 
 This repository hosts the academic project exploring computer graphics for 3D rendering with Neural Radiance Fields (NeRF) and Structure from Motion (SfM) techniques.
+[RBE-549 Project-2: Structure from Motion and Neural Radiance Field]([URL](https://rbe549.github.io/spring2023/proj/p2/))
+
 
 ## Table of Contents
 - [About The Project](#about-the-project)
