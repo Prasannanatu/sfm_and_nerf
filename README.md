@@ -13,7 +13,7 @@
 
 | ![image1](./NeRF/test_gif.gif) | ![image2](./sfm_p/Phase1/outputs/Registered_camera_poses_with_nonlinear_PnP2.png) |
 |:--:|:---:|
-| Caption for image 1 | Caption for image 2 |
+| NeRF | SFM |
 
 
 
