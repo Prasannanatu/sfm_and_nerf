@@ -1,4 +1,5 @@
-Structure from Motion (SfM) and Neural Radiance Fields (NeRF) Project
+
+# Header 1 Structure from Motion (SfM) and Neural Radiance Fields (NeRF) Project
 This repository hosts the academic project exploring computer graphics for 3D rendering with Neural Radiance Fields (NeRF) and Structure from Motion (SfM) techniques.
 
 Table of Contents
