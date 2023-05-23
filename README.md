@@ -12,8 +12,12 @@
 </p> -->
 
 | ![image1](./NeRF/test_gif.gif) | ![image2](./sfm_p/Phase1/outputs/Registered camera poses with nonlinear PnP2.png) |
-|:---:|:---:|
+|:--:|:---:|
 | Caption for image 1 | Caption for image 2 |
+
+
+
+
 This repository hosts the academic project exploring computer graphics for 3D rendering with Neural Radiance Fields (NeRF) and Structure from Motion (SfM) techniques.
 
 #Table of Contents
